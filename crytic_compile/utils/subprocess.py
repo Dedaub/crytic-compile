@@ -2,6 +2,7 @@
 Process execution helpers.
 """
 import logging
+import sys
 import os
 from pathlib import Path
 import shutil
@@ -15,6 +16,7 @@ def run(
     cmd: List[str],
     cwd: Optional[Union[str, os.PathLike]] = None,
     extra_env: Optional[Dict[str, str]] = None,
+    pipe_output: bool = False,
     **kwargs: Any,
 ) -> Optional[subprocess.CompletedProcess]:
     """
@@ -45,13 +47,21 @@ def run(
     )
 
     try:
+        if pipe_output:
+            pipe_args = {
+                "stdout": sys.stdout,
+                "stderr": sys.stderr,
+            }
+        else:
+            pipe_args = {}
+
         return subprocess.run(
             cmd,
             executable=subprocess_exe,
             cwd=subprocess_cwd,
             env=subprocess_env,
             check=True,
-            capture_output=True,
+            **pipe_args,
             **kwargs,
         )
     except FileNotFoundError:

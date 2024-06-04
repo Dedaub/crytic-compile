@@ -178,7 +178,7 @@ class Hardhat(AbstractPlatform):
 
         if not hardhat_ignore_compile:
             cmd = base_cmd + ["compile", "--force"]
-            run(cmd, cwd=self._target)
+            run(cmd, cwd=self._target, pipe_output=True)
 
         hardhat_like_parsing(crytic_compile, self._target, build_directory, hardhat_working_dir)
 

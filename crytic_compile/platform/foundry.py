@@ -75,6 +75,7 @@ class Foundry(AbstractPlatform):
             run(
                 compilation_command,
                 cwd=self._target,
+                pipe_output=True,
             )
 
         build_directory = Path(
