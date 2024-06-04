@@ -46,7 +46,14 @@ class Foundry(AbstractPlatform):
             "ignore_compile", False
         )
 
-        out_directory = kwargs.get("foundry_out_directory", "out")
+        foundry_config = None
+        out_directory = kwargs.get("foundry_out_directory")
+
+        if out_directory is None:
+            if foundry_config := self.config(self._target):
+                out_directory = foundry_config.out_path
+
+        out_directory = out_directory or "out"
 
         if ignore_compile:
             LOGGER.info(
@@ -63,7 +70,7 @@ class Foundry(AbstractPlatform):
             compile_all = kwargs.get("foundry_compile_all", False)
 
             if not compile_all:
-                foundry_config = self.config(self._target)
+                foundry_config = foundry_config or self.config(self._target)
                 if foundry_config:
                     compilation_command += [
                         "--skip",
@@ -83,6 +90,7 @@ class Foundry(AbstractPlatform):
             out_directory,
             "build-info",
         )
+
 
         hardhat_like_parsing(crytic_compile, self._target, build_directory, self._target)
 
@@ -148,6 +156,7 @@ class Foundry(AbstractPlatform):
 
         # Foundry project configurations
         result.src_path = json_config.get("src")
+        result.out_path = json_config.get("out")
         result.tests_path = json_config.get("test")
         result.libs_path = json_config.get("libs")
         result.scripts_path = json_config.get("script")
